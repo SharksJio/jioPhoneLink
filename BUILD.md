@@ -5,10 +5,11 @@ This guide covers building and deploying both the Tablet and Companion apps.
 ## Prerequisites
 
 ### For Tablet App
-- JDK 11 or higher
-- Android SDK (API 26+)
-- Android Studio (optional but recommended)
-- Gradle 8.2+
+- JDK 17 or higher
+- Android SDK (API 26+, compileSdk 35)
+- Android Studio Narwhal 2025.1.2 or higher (recommended)
+- Gradle 8.11.1+
+- Kotlin 2.1.0+
 
 ### For Companion App
 - Flutter SDK 3.0.0+
@@ -326,10 +327,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
       - name: Cache Gradle packages
         uses: actions/cache@v3

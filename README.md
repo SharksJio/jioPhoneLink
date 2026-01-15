@@ -66,10 +66,11 @@ This repository contains two applications:
 ### Prerequisites
 
 **For Tablet App:**
-- Android Studio Arctic Fox or later
-- Android SDK (API 26+)
-- Kotlin 1.9+
-- Gradle 8.2+
+- Android Studio Narwhal 2025.1.2 or later (K2 mode supported)
+- Android SDK (API 26+, compileSdk 35)
+- JDK 17 or higher
+- Kotlin 2.1.0+
+- Gradle 8.11.1+
 
 **For Companion App:**
 - Flutter SDK 3.0.0 or higher
