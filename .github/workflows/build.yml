@@ -2,7 +2,7 @@ name: Build and Test
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'copilot/**' ]
   pull_request:
     branches: [ main, develop ]
 
@@ -54,11 +54,13 @@ jobs:
       working-directory: companion-app
       run: flutter build apk --debug
     
-    - name: Upload APK
+    - name: Upload Companion App APK
       uses: actions/upload-artifact@v3
       with:
-        name: companion-app-debug.apk
+        name: companion-app-debug
         path: companion-app/build/app/outputs/flutter-apk/app-debug.apk
+        if-no-files-found: error
+        retention-days: 30
   
   build-tablet-app:
     name: Build Tablet App (Android)
@@ -91,8 +93,33 @@ jobs:
       working-directory: tablet-app
       run: ./gradlew assembleDebug
     
-    - name: Upload APK
+    - name: Upload Tablet App APK
       uses: actions/upload-artifact@v3
       with:
-        name: tablet-app-debug.apk
+        name: tablet-app-debug
         path: tablet-app/app/build/outputs/apk/debug/app-debug.apk
+        if-no-files-found: error
+        retention-days: 30
+  
+  build-summary:
+    name: Build Summary
+    runs-on: ubuntu-latest
+    needs: [build-companion-android, build-tablet-app]
+    if: always()
+    
+    steps:
+    - name: Check build status
+      run: |
+        echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Companion App (Phone)" >> $GITHUB_STEP_SUMMARY
+        echo "Status: ${{ needs.build-companion-android.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Tablet App" >> $GITHUB_STEP_SUMMARY
+        echo "Status: ${{ needs.build-tablet-app.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "- Companion App APK: \`companion-app-debug\`" >> $GITHUB_STEP_SUMMARY
+        echo "- Tablet App APK: \`tablet-app-debug\`" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Download artifacts from the Actions tab above." >> $GITHUB_STEP_SUMMARY

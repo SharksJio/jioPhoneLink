@@ -264,60 +264,121 @@ flutter build ios --release
 
 ### GitHub Actions Example
 
-Create `.github/workflows/build.yml`:
+The repository includes a complete CI/CD workflow at `.github/workflows/build.yml`:
 
 ```yaml
-name: Build Apps
+name: Build and Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop, 'copilot/**' ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 jobs:
-  build-android:
+  test-companion-app:
+    name: Test Companion App (Flutter)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+          channel: 'stable'
+      - name: Get dependencies
+        working-directory: companion-app
+        run: flutter pub get
+      - name: Analyze code
+        working-directory: companion-app
+        run: flutter analyze
+      - name: Run tests
+        working-directory: companion-app
+        run: flutter test
+
+  build-companion-android:
+    name: Build Companion App (Android)
+    runs-on: ubuntu-latest
+    needs: test-companion-app
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+          channel: 'stable'
+      - name: Get dependencies
+        working-directory: companion-app
+        run: flutter pub get
+      - name: Build APK
+        working-directory: companion-app
+        run: flutter build apk --debug
+      - name: Upload Companion App APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: companion-app-debug
+          path: companion-app/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+  build-tablet-app:
+    name: Build Tablet App (Android)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
           java-version: '11'
           distribution: 'temurin'
-      
-      - name: Build Tablet App
-        run: |
-          cd tablet-app
-          ./gradlew assembleDebug
-      
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
         with:
-          flutter-version: '3.16.0'
-      
-      - name: Build Companion App
-        run: |
-          cd companion-app
-          flutter pub get
-          flutter build apk --debug
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Grant execute permission for gradlew
+        working-directory: tablet-app
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        working-directory: tablet-app
+        run: ./gradlew assembleDebug
+      - name: Upload Tablet App APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: tablet-app-debug
+          path: tablet-app/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
 
-  build-ios:
-    runs-on: macos-latest
+  build-summary:
+    name: Build Summary
+    runs-on: ubuntu-latest
+    needs: [build-companion-android, build-tablet-app]
+    if: always()
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.16.0'
-      
-      - name: Build Companion App iOS
+      - name: Check build status
         run: |
-          cd companion-app
-          flutter pub get
-          flutter build ios --no-codesign
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "### Companion App (Phone)" >> $GITHUB_STEP_SUMMARY
+          echo "Status: ${{ needs.build-companion-android.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "### Tablet App" >> $GITHUB_STEP_SUMMARY
+          echo "Status: ${{ needs.build-tablet-app.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "### Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- Companion App APK: companion-app-debug" >> $GITHUB_STEP_SUMMARY
+          echo "- Tablet App APK: tablet-app-debug" >> $GITHUB_STEP_SUMMARY
+```
+
+**Features:**
+- Automated testing for companion app
+- Parallel builds for both apps
+- APK artifacts uploaded and available for 30 days
+- Build summary with status and artifact links
+- Triggers on push to main, develop, and copilot branches
+- Gradle caching for faster builds
 ```
 
 ## Testing Builds
