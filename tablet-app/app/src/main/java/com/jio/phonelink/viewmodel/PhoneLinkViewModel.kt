@@ -133,7 +133,7 @@ class PhoneLinkViewModel(application: Application) : AndroidViewModel(applicatio
                 val addresses = networkInterface.inetAddresses
                 while (addresses.hasMoreElements()) {
                     val address = addresses.nextElement()
-                    if (!address.isLoopbackAddress && address is InetAddress) {
+                    if (!address.isLoopbackAddress && address is java.net.Inet4Address) {
                         val hostAddress = address.hostAddress
                         if (hostAddress?.indexOf(':') == -1) {
                             return hostAddress ?: ""

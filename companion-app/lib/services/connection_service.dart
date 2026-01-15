@@ -31,6 +31,10 @@ class ConnectionService {
           try {
             final data = jsonDecode(message as String);
             _messageController.add(data);
+            // Set connected on first successful message
+            if (!_isConnected) {
+              _isConnected = true;
+            }
           } catch (e) {
             print('Error decoding message: $e');
           }
@@ -43,8 +47,6 @@ class ConnectionService {
           print('WebSocket error: $error');
         },
       );
-
-      _isConnected = true;
       
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('tablet_address', address);
@@ -55,8 +57,14 @@ class ConnectionService {
   }
 
   Future<void> sendMessage(Map<String, dynamic> data) async {
-    if (_channel != null && _isConnected) {
-      _channel!.sink.add(jsonEncode(data));
+    final channel = _channel;
+    if (channel != null && _isConnected) {
+      try {
+        channel.sink.add(jsonEncode(data));
+      } catch (e) {
+        print('Error sending message: $e');
+        _isConnected = false;
+      }
     }
   }
 

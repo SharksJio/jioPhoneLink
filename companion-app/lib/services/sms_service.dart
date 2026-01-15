@@ -26,7 +26,7 @@ class SmsService {
       final messageList = messages.map((msg) => {
         'address': msg.address,
         'body': msg.body,
-        'date': msg.date?.toIso8601String(),
+        'date': msg.date?.toIso8601String() ?? DateTime.now().toIso8601String(),
       }).toList();
 
       await _connectionService.sendMessage({

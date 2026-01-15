@@ -31,8 +31,13 @@ class WebSocketServer(
     override fun onMessage(conn: WebSocket?, message: String?) {
         message?.let {
             try {
-                val data = gson.fromJson(it, Map::class.java) as Map<String, Any>
-                onMessageReceived(data)
+                @Suppress("UNCHECKED_CAST")
+                val data = gson.fromJson(it, Map::class.java) as? Map<String, Any>
+                data?.let { validData ->
+                    onMessageReceived(validData)
+                } ?: run {
+                    println("Error: Invalid message format")
+                }
             } catch (e: Exception) {
                 println("Error parsing message: ${e.message}")
             }

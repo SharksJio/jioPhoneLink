@@ -12,7 +12,8 @@ class DeviceInfoService {
   Timer? _updateTimer;
 
   void startMonitoring() {
-    _updateTimer?.cancel();
+    // Ensure only one timer is active
+    stopMonitoring();
     _updateTimer = Timer.periodic(const Duration(seconds: 30), (_) {
       _sendDeviceInfo();
     });
