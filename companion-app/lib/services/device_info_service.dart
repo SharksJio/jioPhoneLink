@@ -22,6 +22,7 @@ class DeviceInfoService {
 
   void stopMonitoring() {
     _updateTimer?.cancel();
+    _updateTimer = null;
   }
 
   Future<void> _sendDeviceInfo() async {

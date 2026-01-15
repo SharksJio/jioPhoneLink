@@ -13,9 +13,15 @@ class PairingScreen extends StatefulWidget {
 class _PairingScreenState extends State<PairingScreen> {
   final ConnectionService _connectionService = ConnectionService();
   bool _isConnecting = false;
+  bool _hasScanned = false;
 
   Future<void> _connectToTablet(String address) async {
-    setState(() => _isConnecting = true);
+    if (_isConnecting || _hasScanned) return; // Prevent multiple attempts
+    
+    setState(() {
+      _isConnecting = true;
+      _hasScanned = true;
+    });
 
     try {
       await _connectionService.connect(address);
@@ -27,6 +33,8 @@ class _PairingScreenState extends State<PairingScreen> {
       );
     } catch (e) {
       if (!mounted) return;
+      
+      setState(() => _hasScanned = false); // Allow retry on error
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Connection failed: $e')),
