@@ -52,7 +52,7 @@ class WebSocketServer(
         println("WebSocket server started on port: $port")
     }
 
-    fun broadcast(message: String) {
+    override fun broadcast(message: String) {
         connectedClients.forEach { client ->
             client.send(message)
         }
