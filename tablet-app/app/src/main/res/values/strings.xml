@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Jio Phone Link</string>
+    <string name="connection_status">Connection Status</string>
+    <string name="waiting_for_connection">Waiting for connection...</string>
+    <string name="connected">Connected</string>
+    <string name="battery_label">Battery:</string>
+    <string name="network_label">Network Signal:</string>
+    <string name="notifications_title">Notifications</string>
+    <string name="messages_title">Messages</string>
+    <string name="calls_title">Call Logs</string>
+    <string name="scan_qr_message">Scan this QR code with your phone</string>
+    <string name="regenerate_qr">Regenerate QR Code</string>
+</resources>
