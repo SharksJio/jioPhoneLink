@@ -4,7 +4,7 @@ import '../services/connection_service.dart';
 import 'home_screen.dart';
 
 class PairingScreen extends StatefulWidget {
-  const PairingScreen({Key? key}) : super(key: key);
+  const PairingScreen({super.key});
 
   @override
   State<PairingScreen> createState() => _PairingScreenState();

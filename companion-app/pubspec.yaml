@@ -15,12 +15,12 @@ dependencies:
   http: ^1.1.0
   web_socket_channel: ^2.4.0
   permission_handler: ^11.0.1
-  flutter_local_notifications: ^16.1.0
+  flutter_local_notifications: ^17.0.0
   battery_plus: ^5.0.2
   connectivity_plus: ^5.0.2
   shared_preferences: ^2.2.2
   path_provider: ^2.1.1
-  file_picker: ^6.1.1
+  file_picker: ^8.0.0
   telephony: ^0.2.0
   qr_flutter: ^4.1.0
   mobile_scanner: ^3.5.2

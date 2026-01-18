@@ -6,7 +6,7 @@ import '../services/sms_service.dart';
 import '../services/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -107,17 +107,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildStatusCard() {
-    return Card(
+    return const Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Icon(Icons.check_circle, color: Colors.green),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Connected to Tablet',
                   style: TextStyle(
                     fontSize: 18,
@@ -126,8 +126,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            const Text(
+            SizedBox(height: 12),
+            Text(
               'Your phone is connected and syncing data with your tablet.',
               style: TextStyle(color: Colors.grey),
             ),
